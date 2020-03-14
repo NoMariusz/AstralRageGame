@@ -276,8 +276,9 @@ class UiAfterGame(object):
         print("Start chest animation")
         self.chest_movie = QtGui.QMovie("images/chest.gif", QByteArray(), self.chest_image)
         self.chest_movie.setSpeed(100)
-        self.chest_movie.start()
+        self.chest_movie.setCacheMode(QtGui.QMovie.CacheAll)
         self.chest_image.setMovie(self.chest_movie)
+        self.chest_movie.start()
 
         self.chest_timer = QTimer()
         self.chest_timer.timeout.connect(lambda: self.stop_chest_anim(self.chest_timer, self.chest_movie))
@@ -290,7 +291,7 @@ class UiAfterGame(object):
         self.chest_label.show()
 
         movie.jumpToFrame(movie.frameCount()-1)
-        print("Stop chest animation")
+        print("Stop chest animation", movie)
 
     def get_btn_palette(self):
         palette = QtGui.QPalette()

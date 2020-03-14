@@ -112,7 +112,8 @@ class UiSkinSkills(object):
         self.btn_list = []
         self.label_list = []
 
-        self.load_card_elements()
+        self.load_card_elements()       # ładuje gotowe właściwości do elementów scrolla
+        self.set_scrollbar_pos_to_start()       # ustala scroll na początek aby po ponownym załadowaniu jego pozycja była prawidłowa
 
         self.skin_list = JsonConnector.get_skin_list()
         for ind, elem in enumerate(self.skin_list):
@@ -254,6 +255,10 @@ class UiSkinSkills(object):
         self.coin_label.setAlignment(QtCore.Qt.AlignCenter)
         self.coin_label.setText("Coins: " + str(JsonConnector.get_from_config("coins")))
 
+    def set_scrollbar_pos_to_start(self):
+        sb = self.scroll.horizontalScrollBar()
+        sb.setValue(sb.minimum())
+
     # skills
 
     def skillsRetranslateUi(self, MainWindow):
@@ -267,7 +272,8 @@ class UiSkinSkills(object):
         self.btn_list = []
         self.label_list = []
 
-        self.load_card_elements()
+        self.load_card_elements()       # ładuje gotowe właściwości do elementów scrolla
+        self.set_scrollbar_pos_to_start()       # ustala scroll na początek aby po ponownym załadowaniu jego pozycja była prawidłowa
 
         self.skill_list = JsonConnector.get_skills_dict()
         for ind, elem in enumerate(self.skill_list):

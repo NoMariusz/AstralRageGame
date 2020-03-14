@@ -156,6 +156,7 @@ class Postac(QLabel):       # klasa do wszystkich niestandardowych table w proje
             if type(x) == PlayerLaser or type(x) == EnemyLaser:
                 x.timer.stop()
             if type(x) == Benek:
+                cls.stop_player_clocks(x)
                 x.kill()
         for x in cls.lista_postaci:
             if type(x) == PlayerLaser or type(x) == EnemyLaser:
@@ -169,6 +170,11 @@ class Postac(QLabel):       # klasa do wszystkich niestandardowych table w proje
         cls.lista_postaci = []
         cls.enemies = []
         cls.core.player_death()
+
+    @classmethod
+    def stop_player_clocks(cls, hit):
+        for x in hit.clocks:
+            x.stop()
 
 
 class Parowka(Postac):
@@ -264,6 +270,7 @@ class Parowka(Postac):
 class Benek(Postac):
     def __init__(self, layout, move_distance=100, *args):
         super().__init__(layout, *args)
+        self.clocks = []
 
         self.load_player_config()
 
@@ -278,9 +285,15 @@ class Benek(Postac):
         self.playing_sound = False
 
         self.rtimer = QTimer()
+        self.clocks.append(self.rtimer)
         self.rtimer.timeout.connect(self.ruch_prawo)
         self.ltimer = QTimer()
+        self.clocks.append(self.ltimer)
         self.ltimer.timeout.connect(self.ruch_lewo)
+
+        self.shot_block_timer = QTimer()
+        self.clocks.append(self.shot_block_timer)
+        self.shot_block_timer.timeout.connect(self.shot_accuracy_unblock)
 
         self.make_move_animations()
         self.make_reload_bar()
@@ -353,8 +366,6 @@ class Benek(Postac):
 
     def shot_accuracy_block(self):
         self.can_shot = False
-        self.shot_block_timer = QTimer()
-        self.shot_block_timer.timeout.connect(self.shot_accuracy_unblock)
         self.shot_block_timer.start(self.fire_speed)
 
         self.movie.start()
@@ -370,11 +381,13 @@ class Benek(Postac):
         if not self.playing_sound:
             self.playing_sound = True
             self.move_sound = SoundThread("shotEngineNoise.wav", loop=True)
+            self.clocks.append(self.move_sound)
             self.move_sound.start()
 
     def move_sound_stop(self):
         if self.playing_sound and not (self.ltimer.isActive() or self.rtimer.isActive()):
             self.move_sound.stop()
+            self.clocks.remove(self.move_sound)
             self.playing_sound = False
 
     def make_reload_bar(self):
@@ -415,28 +428,10 @@ class Benek(Postac):
         self.rmove_anim.frameCount()
 
     def expand_anim_movie(self, movie):
-        movie.start()
-        self.exanim_timer = QTimer()
-        self.exanim_timer.timeout.connect(lambda: self.stop_expand_anim_movie(movie, self.exanim_timer))
-        self.exanim_timer.start(100)
-
-    def stop_expand_anim_movie(self, movie, timer):
-        print("timer stop_expand_anim_movie", self)
-        movie.stop()
-        movie.jumpToFrame(int(movie.frameCount()/2))
-        timer.stop()
+        movie.jumpToFrame(int(movie.frameCount() / 2))
 
     def collapse_anim_movie(self, movie):
-        movie.start()
-        self.coanim_timer = QTimer()
-        self.coanim_timer.timeout.connect(lambda: self.stop_collapse_anim_movie(movie, self.coanim_timer))
-        self.coanim_timer.start(100)
-
-    def stop_collapse_anim_movie(self, movie, timer):
-        print("timer stop_collapse_anim_movie", self)
-        movie.stop()
         movie.jumpToFrame(0)
-        timer.stop()
 
 
 class Laser(Postac):
@@ -557,18 +552,8 @@ class EnemyLaser(Laser):
         self.timer.stop()
         Postac.okno.main_game = False
 
-        self.stop_player_clocks(hit)
-        hit.kill()
-
         self.kill()
         Postac.endgame()
-
-    def stop_player_clocks(self, hit):
-        hit.ltimer.stop()
-        hit.rtimer.stop()
-        hit.move_sound_stop()
-        hit.exanim_timer.stop()
-        hit.coanim_timer.stop()
 
 
 class Scout(Parowka):
