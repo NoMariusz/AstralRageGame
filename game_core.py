@@ -3,8 +3,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from main_shot import Ui_MainWindow
 from menu_modul import Ui_MainMenu
-# from shop_modul import UiShop
-# from skills_menu_modul import UiSkills
 from skins_or_skills_modul import UiSkinSkills
 from window_modul import MyMainWindow
 from data_modul import JsonConnector, SoundThread
@@ -58,7 +56,6 @@ class GameCore(object):
         self.stop_menu_music()
 
     def reload_main_game(self):
-        print("Reloading main game start")
         self.ui.centralwidget.close()
         del self.ui
         self.ui = Ui_MainWindow()
@@ -74,7 +71,6 @@ class GameCore(object):
 
         self.music = SoundThread("shotMainSoundtrack.wav", True)
         self.music.start()
-        print("Reloading main game stop")
 
     def make_aftergame(self):
         self.ui.centralwidget.close()
@@ -82,13 +78,11 @@ class GameCore(object):
         self.load_aftergame()
 
     def load_aftergame(self):
-        print("Loading aftergame ui start")
         self.ui = UiAfterGame()
         self.set_aftergame_config()
         self.ui.setupUi(self.window)
         self.window.resize_tlo()
         self.ui.centralwidget.show()
-        print("Loading aftergame ui stop")
 
     def set_aftergame_config(self):
         self.cls_game_config(self.ui, self.window)

@@ -12,7 +12,7 @@ class Ui_MainWindow(object):
     okno = None
 
     def __init__(self):
-        self.tlo = QtWidgets.QLabel()
+        self.tlo = QtWidgets.QLabel()       # atrapy elementów tak aby nie powstawały błędy
         self.player = QtWidgets.QLabel()
         self.enemy = QtWidgets.QLabel()
         self.score = QtWidgets.QLabel()

@@ -547,8 +547,6 @@ class EnemyLaser(Laser):
             self.kill()
 
     def when_hit(self, hit):
-        print("benek death")
-
         self.timer.stop()
         Postac.okno.main_game = False
 
